@@ -25,6 +25,7 @@ public class PlayerCtrl : MonoBehaviour
     [SerializeField] private int FrameMul;
     private bool OnDown = false;
     private bool OnStop = false;
+    GameObject bomb1;
 
     void Start()
     {
@@ -32,6 +33,8 @@ public class PlayerCtrl : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         //touch = GameObject.Find("touch");
         touch.enabled = false;
+        bomb1 = Instantiate(bomb, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+        bomb1.transform.parent = gameObject.transform;
         StartCoroutine(DelHealth());
     }
 
@@ -53,6 +56,7 @@ public class PlayerCtrl : MonoBehaviour
             CurrentMousePosition = Camera.main.ScreenToViewportPoint(Input.mousePosition);
             speedX = CurrentMousePosition.x - startMousePosition.x;
             speedY = CurrentMousePosition.y - startMousePosition.y;
+           // Debug.Log(speedX);
             if (speedX < 0)
                 sr.flipX = true;
             else
@@ -92,10 +96,13 @@ public class PlayerCtrl : MonoBehaviour
     {
         if (!bombWait)
         {
-            Instantiate(bomb, new Vector3(transform.position.x + 1.5F, transform.position.y - 2, 0), Quaternion.identity);
+            bomb1.GetComponent<Bomb>().goBoom();
+            bomb1.GetComponent<Rigidbody2D>().isKinematic = false;
+            bomb1.GetComponent<Rigidbody2D>().AddForce(new Vector3(rb.velocity.x, rb.velocity.y, 0));
             bombWait = true;
             bombPanel.fillAmount = 0;
             StartCoroutine(WaitBomb());
+            StartCoroutine(timeBomb());
         }
     }
 
@@ -106,7 +113,7 @@ public class PlayerCtrl : MonoBehaviour
 
     public void addHealth(float _health)
     {
-        Debug.Log(health);
+       // Debug.Log(health);
         health += _health;
         if (health >= 1.0F)
             health = 1.0F;
@@ -120,6 +127,8 @@ public class PlayerCtrl : MonoBehaviour
         {
             bombWait = false;
             StopCoroutine(WaitBomb());
+            bomb1 = Instantiate(bomb, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+            bomb1.transform.parent = gameObject.transform;
         }
         else
         {
@@ -127,6 +136,12 @@ public class PlayerCtrl : MonoBehaviour
             StartCoroutine(WaitBomb());
         }
 
+    }
+
+    IEnumerator timeBomb()
+    {
+        yield return new WaitForSeconds(0.5F);
+        bomb1.GetComponent<CircleCollider2D>().isTrigger = false;
     }
 
     IEnumerator DelHealth()

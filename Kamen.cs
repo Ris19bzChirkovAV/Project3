@@ -5,6 +5,7 @@ using UnityEngine;
 public class Kamen : MonoBehaviour
 {
     public GameObject player;
+    public GameObject explosiveAnim;
     Rigidbody2D rb;
     float currentSpeed;
     float oldSpeed = 0;
@@ -27,6 +28,7 @@ public class Kamen : MonoBehaviour
     public void destroy()
     {
         player.GetComponent<PlayerCtrl>().addHealth(0.1F);
+        Instantiate(explosiveAnim, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
         Destroy(gameObject);
     }
 

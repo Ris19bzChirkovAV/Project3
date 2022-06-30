@@ -6,12 +6,12 @@ public class Bomb : MonoBehaviour
 {
     private float mulX;
     private float mulY;
-    // Start is called before the first frame update
-    void Start()
+    public GameObject bombAnim;
+
+    public void goBoom()
     {
         StartCoroutine(Boom());
     }
-
     public IEnumerator Boom()
     {
         yield return new WaitForSeconds(3);
@@ -29,7 +29,16 @@ public class Bomb : MonoBehaviour
 
             if (C.tag == "Window")
                 Destroy(C.gameObject);
+
+            if (C.tag == "Defence")
+            {
+                mulX = transform.position.x - C.gameObject.transform.position.x;
+                mulY = transform.position.y - C.gameObject.transform.position.y;
+                C.gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
+                C.gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector3(mulX * -300, mulY * -300, 0));
+            }
         }
+        Instantiate(bombAnim, new Vector3(transform.position.x, transform.position.y + 0.5F, 0), Quaternion.identity);
         Destroy(gameObject, 0.0F);
     }
 }
