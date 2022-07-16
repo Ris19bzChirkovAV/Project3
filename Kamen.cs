@@ -6,6 +6,8 @@ public class Kamen : MonoBehaviour
 {
     public GameObject player;
     public GameObject explosiveAnim;
+    public GameObject gold;
+    public GameObject zombie;
     Rigidbody2D rb;
     float currentSpeed;
     float oldSpeed = 0;
@@ -29,7 +31,13 @@ public class Kamen : MonoBehaviour
     {
         player.GetComponent<PlayerCtrl>().addHealth(0.1F);
         Instantiate(explosiveAnim, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+        Instantiate(gold, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
         Destroy(gameObject);
+    }
+
+    public void addzombie()
+    {
+        Instantiate(zombie, new Vector3(transform.position.x, transform.position.y - 1.5F, 0), Quaternion.identity);
     }
 
     IEnumerator changeGravity()

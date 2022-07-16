@@ -10,13 +10,16 @@ public class PlayerCtrl : MonoBehaviour
     private SpriteRenderer sr;
     public Image touch;
     public Image bombPanel;
+    public Image bombPanel2;
     public Image healthPanel;
     private float health = 1.0F;
     public bool bombWait = false;
+    public bool bombWait2 = false;
     public GameObject bomb;
     [SerializeField] private float speedMul;
     private Vector3 startMousePosition;
     private Vector3 CurrentMousePosition;
+    private Vector3 oldMousePosition;
     private float speedX;
     private float speedY;
     private float StopMulX;
@@ -25,24 +28,34 @@ public class PlayerCtrl : MonoBehaviour
     [SerializeField] private int FrameMul;
     private bool OnDown = false;
     private bool OnStop = false;
+    public bool OnClick = false;
+    public float maxSpeed;
     GameObject bomb1;
+    public GameObject bomb2;
+    GameObject bomb3;
+    public int gold = 0;
+    public Text text;
+    private bool brake = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
-        //touch = GameObject.Find("touch");
+        text = GameObject.Find("GoldCount").GetComponent<Text>();
         touch.enabled = false;
         bomb1 = Instantiate(bomb, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
         bomb1.transform.parent = gameObject.transform;
+        bomb3 = Instantiate(bomb2, new Vector3(transform.position.x - 0.1F, transform.position.y - 0.2F, 0), Quaternion.identity);
+        bomb3.transform.parent = gameObject.transform;
         StartCoroutine(DelHealth());
+        text.text = "" + gold;
     }
 
     // Update is called once per frame
     void Update()
     {
         
-        if (Input.GetMouseButton(0) && !OnDown)
+        if (Input.GetMouseButton(0) && !OnDown && OnClick)
         {
             touch.enabled = true;
             
@@ -51,21 +64,30 @@ public class PlayerCtrl : MonoBehaviour
             OnDown = true;
         }
 
-        if (OnDown)
+        if (OnDown && OnClick)
         {
+
             CurrentMousePosition = Camera.main.ScreenToViewportPoint(Input.mousePosition);
-            speedX = CurrentMousePosition.x - startMousePosition.x;
-            speedY = CurrentMousePosition.y - startMousePosition.y;
-           // Debug.Log(speedX);
-            if (speedX < 0)
-                sr.flipX = true;
+            if (CurrentMousePosition.x < 0.7F)
+            {
+                brake = false;
+                speedX = CurrentMousePosition.x - startMousePosition.x;
+                speedY = CurrentMousePosition.y - startMousePosition.y;
+                if (speedX > maxSpeed)
+                    speedX = maxSpeed;
+                if (speedX < 0)
+                    sr.flipX = true;
+                else
+                    sr.flipX = false;
+                // rb.AddForce(new Vector3(speedX * speedMul, speedY * speedMul, 0));
+                rb.velocity = new Vector3(speedX * speedMul, speedY * speedMul, 0);
+            }
             else
-                sr.flipX = false;
-           // rb.AddForce(new Vector3(speedX * speedMul, speedY * speedMul, 0));
-           rb.velocity = new Vector3(speedX * speedMul, speedY * speedMul, 0);
+                brake = true;
+
         }
 
-        if (!Input.GetMouseButton(0) && OnDown)
+        if (!Input.GetMouseButton(0) && OnDown || brake)
         {
             touch.enabled = false;
             OnDown = false;
@@ -75,7 +97,7 @@ public class PlayerCtrl : MonoBehaviour
            // rb.velocity = new Vector3(0, 0, 0);
         }
 
-        if (OnStop && !Input.GetMouseButton(0))
+        if (OnStop && !Input.GetMouseButton(0) || OnStop && brake)
         {
             CountFrame++;
             speedX -= StopMulX;
@@ -89,6 +111,10 @@ public class PlayerCtrl : MonoBehaviour
             }
 
         }
+
+        if (text.fontSize > 61)
+            text.fontSize--;
+
             
     }
 
@@ -98,11 +124,25 @@ public class PlayerCtrl : MonoBehaviour
         {
             bomb1.GetComponent<Bomb>().goBoom();
             bomb1.GetComponent<Rigidbody2D>().isKinematic = false;
-            bomb1.GetComponent<Rigidbody2D>().AddForce(new Vector3(rb.velocity.x, rb.velocity.y, 0));
+            bomb1.GetComponent<Rigidbody2D>().velocity = new Vector3(rb.velocity.x, rb.velocity.y, 0);
             bombWait = true;
             bombPanel.fillAmount = 0;
             StartCoroutine(WaitBomb());
             StartCoroutine(timeBomb());
+        }
+    }
+
+    public void AttackBomb2()
+    {
+        if (!bombWait2)
+        {
+            bomb3.GetComponent<bomb2>().goBoom();
+            bomb3.GetComponent<Rigidbody2D>().isKinematic = false;
+            bomb3.GetComponent<Rigidbody2D>().velocity = new Vector3(rb.velocity.x, 0, 0);
+            bombWait2 = true;
+            bombPanel2.fillAmount = 0;
+            StartCoroutine(WaitBomb2());
+            StartCoroutine(timeBomb2());
         }
     }
 
@@ -115,9 +155,18 @@ public class PlayerCtrl : MonoBehaviour
     {
        // Debug.Log(health);
         health += _health;
+        if (health <= 0)
+            health = 0;
         if (health >= 1.0F)
             health = 1.0F;
         healthPanel.fillAmount = health;
+    }
+
+    public void addGold(int _gold)
+    {
+        gold += _gold;
+        text.text = "" + gold;
+        text.fontSize = 110;
     }
 
     IEnumerator WaitBomb()
@@ -138,10 +187,44 @@ public class PlayerCtrl : MonoBehaviour
 
     }
 
+    IEnumerator WaitBomb2()
+    {
+        yield return new WaitForSeconds(0.05F);
+        if (bombPanel2.fillAmount >= 0.99F)
+        {
+            bombWait2 = false;
+            StopCoroutine(WaitBomb2());
+            bomb3 = Instantiate(bomb2, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+            bomb3.transform.parent = gameObject.transform;
+        }
+        else
+        {
+            bombPanel2.fillAmount += 0.01F;
+            StartCoroutine(WaitBomb2());
+        }
+
+    }
+
+    public void OnClickDown()
+    {
+        OnClick = true;
+    }
+
+    public void OnClickUp()
+    {
+        OnClick = false;
+    }
+
     IEnumerator timeBomb()
     {
         yield return new WaitForSeconds(0.5F);
         bomb1.GetComponent<CircleCollider2D>().isTrigger = false;
+    }
+
+    IEnumerator timeBomb2()
+    {
+        yield return new WaitForSeconds(0.5F);
+        bomb3.GetComponent<CircleCollider2D>().isTrigger = false;
     }
 
     IEnumerator DelHealth()
@@ -150,4 +233,6 @@ public class PlayerCtrl : MonoBehaviour
         addHealth(-0.005F);
         StartCoroutine(DelHealth());
     }
+
+
 }
