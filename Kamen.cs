@@ -45,4 +45,17 @@ public class Kamen : MonoBehaviour
         yield return new WaitForSeconds(2);
         rb.gravityScale = 1.0F;
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player")
+        {
+
+            if (rb.velocity.magnitude - 1.0F > player.GetComponent<Rigidbody2D>().velocity.magnitude)
+            {
+                player.GetComponent<PlayerCtrl>().addHealth(-0.1F);
+                destroy();
+            }
+        }
+    }
 }

@@ -11,6 +11,8 @@ public class chicken : MonoBehaviour
     System.Random rand = new System.Random();
     private Animator animator;
     private bool OnStop = false;
+    private AudioSource audioSource;
+    public AudioClip chickenUp;
 
     private CharState State
     {
@@ -23,6 +25,7 @@ public class chicken : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         player = GameObject.Find("BabaYaga");
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
         StartCoroutine(ChandeNapravl());
     }
 
@@ -41,7 +44,7 @@ public class chicken : MonoBehaviour
         if (!OnStop)
             State = CharState.chicken1;
         yield return new WaitForSeconds(rand.Next(3,6));
-        if (rand.Next(1, 7) == 3)
+        if (rand.Next(1, 5) == 3)
         {
             StartCoroutine(FlyChicken());
             OnStop = true;
@@ -57,6 +60,8 @@ public class chicken : MonoBehaviour
     IEnumerator FlyChicken()
     {
         State = CharState.chickenFly;
+        if (!audioSource.isPlaying)
+            audioSource.PlayOneShot(chickenUp);
         yield return new WaitForSeconds(2);
         OnStop = false;
     }

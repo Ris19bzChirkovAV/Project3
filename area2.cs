@@ -11,6 +11,7 @@ public class area2 : MonoBehaviour
     public GameObject pig;
     public GameObject bird;
     public GameObject[] Arr = new GameObject[15];
+    public GameObject gold;
 
     private bool destroyed = false;
     void Start()
@@ -73,11 +74,13 @@ public class area2 : MonoBehaviour
             {
                 var bidr = Instantiate(bird, new Vector3(rand.Next(230, 290), rand.Next(7, 50), 0), Quaternion.identity);
                 bidr.GetComponent<bird1>().napravl = -1.0F;
+                Instantiate(gold, new Vector3(rand.Next(230, 290), rand.Next(7, 50), 0), Quaternion.identity);
             }
             else
             {
                 var bidr = Instantiate(bird, new Vector3(rand.Next(230, 290), rand.Next(7, 30), 0), Quaternion.identity);
                 bidr.GetComponent<bird1>().napravl = 1.0F;
+                Instantiate(gold, new Vector3(rand.Next(230, 290), rand.Next(7, 50), 0), Quaternion.identity);
             }
         }
     }

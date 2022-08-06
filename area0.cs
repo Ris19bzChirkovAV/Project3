@@ -8,6 +8,7 @@ public class area0 : MonoBehaviour
     public GameObject playerPosition;
     public GameObject area;
     public GameObject bird;
+    public GameObject gold;
 
 
     private bool destroyed = false;
@@ -53,11 +54,13 @@ public class area0 : MonoBehaviour
             {
                 var bidr = Instantiate(bird, new Vector3(rand.Next(-20, 30), rand.Next(7, 30), 0), Quaternion.identity);
                 bidr.GetComponent<bird1>().napravl = -1.0F;
+                Instantiate(gold, new Vector3(rand.Next(-20, 30), rand.Next(7, 30), 0), Quaternion.identity);
             }
             else
             {
                 var bidr = Instantiate(bird, new Vector3(rand.Next(-20, 30), rand.Next(7, 30), 0), Quaternion.identity);
                 bidr.GetComponent<bird1>().napravl = 1.0F;
+                Instantiate(gold, new Vector3(rand.Next(-20, 30), rand.Next(7, 30), 0), Quaternion.identity);
             }
         }
     }

@@ -8,7 +8,13 @@ public class Bomb : MonoBehaviour
     private float mulY;
     public GameObject bombAnim;
     public GameObject gold;
-
+    public GameObject gold10;
+    private float boomRadius;
+    private void Start()
+    {
+        boomRadius = PlayerPrefs.GetFloat("Bomb1Radius");
+        Debug.Log(boomRadius);
+    }
     public void goBoom()
     {
         StartCoroutine(Boom());
@@ -16,7 +22,7 @@ public class Bomb : MonoBehaviour
     public IEnumerator Boom()
     {
         yield return new WaitForSeconds(3);
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 3.0F);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, boomRadius);
         foreach(Collider2D C in colliders)
         {
             if (C.tag == "Kamen")
@@ -39,7 +45,7 @@ public class Bomb : MonoBehaviour
 
             if (C.tag == "Window")
             {
-                Instantiate(gold, new Vector3(C.transform.position.x, C.transform.position.y, 0), Quaternion.identity);
+                Instantiate(gold10, new Vector3(C.transform.position.x, C.transform.position.y, 0), Quaternion.identity);
                 Destroy(C.gameObject);
             }
 

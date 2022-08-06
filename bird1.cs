@@ -8,11 +8,15 @@ public class bird1 : MonoBehaviour
     SpriteRenderer sr;
     Animator an;
     public GameObject player;
+    public GameObject gold;
     public float napravl = 1.0F;
     private bool death = false;
+    public AudioClip kar;
+    private AudioSource audioSource;
 
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         an = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
@@ -40,12 +44,18 @@ public class bird1 : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.name == "BabaYaga" || collision.gameObject.name == "arrow2(Clone)")
+        if (this.enabled)
         {
-            death = true;
-            an.enabled = false;
-            rb.gravityScale = 1.0F;
-            Destroy(gameObject, 4.0F);
+            if (collision.gameObject.name == "BabaYaga" || collision.gameObject.name == "arrow2(Clone)")
+            {
+                audioSource.PlayOneShot(kar);
+                death = true;
+                an.enabled = false;
+                rb.gravityScale = 1.0F;
+                Instantiate(gold, new Vector3(transform.position.x, transform.position.y, 0), Quaternion.identity);
+                this.enabled = false;
+                Destroy(gameObject, 4.0F);
+            }
         }
     }
 }

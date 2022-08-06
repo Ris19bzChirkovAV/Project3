@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class goldFly : MonoBehaviour
+public class goldFly10 : MonoBehaviour
 {
     public GameObject player;
     public GameObject target;
@@ -19,8 +19,8 @@ public class goldFly : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, target.transform.position, speed * Time.deltaTime);
         if (Mathf.Abs(transform.position.x - target.transform.position.x) < 0.2F)
         {
-            
-            player.GetComponent<PlayerCtrl>().addGold(1);
+
+            player.GetComponent<PlayerCtrl>().addGold(10);
             Destroy(gameObject);
         }
         speed += 0.2F;

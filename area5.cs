@@ -12,6 +12,7 @@ public class area5 : MonoBehaviour
     public GameObject table;
     public GameObject fire;
     public GameObject Chicken;
+    public GameObject gold;
 
     public GameObject[] Arr = new GameObject[8];
 
@@ -70,11 +71,13 @@ public class area5 : MonoBehaviour
             {
                 var bidr = Instantiate(bird, new Vector3(rand.Next(450, 510), rand.Next(7, 30), 0), Quaternion.identity);
                 bidr.GetComponent<bird1>().napravl = -1.0F;
+                Instantiate(gold, new Vector3(rand.Next(450, 510), rand.Next(7, 30), 0), Quaternion.identity);
             }
             else
             {
                 var bidr = Instantiate(bird, new Vector3(rand.Next(450, 510), rand.Next(7, 30), 0), Quaternion.identity);
                 bidr.GetComponent<bird1>().napravl = 1.0F;
+                Instantiate(gold, new Vector3(rand.Next(450, 510), rand.Next(7, 30), 0), Quaternion.identity);
             }
         }
     }
